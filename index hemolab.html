@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hemo-Lab · Sesión 9 · Prof. Steve Polanco</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ══════════ TOPBAR ══════════ -->
+<div class="topbar">
+  <button class="burger-btn" id="burgerBtn" onclick="toggleSidebar()" title="Menú">
+    <span class="burger-line burger-line-1"></span>
+    <span class="burger-line burger-line-2"></span>
+    <span class="burger-line burger-line-3"></span>
+  </button>
+  <div class="stag">Sesión 9</div>
+  <h1>🩸 Hemo-Lab: Decodificando la Sangre</h1>
+  <div class="progress" id="topProg"></div>
+  <button class="pauta-btn" onclick="openPautaModal()" title="Ver Pauta Etnográfica">📋 Pauta</button>
+  <div class="prof">Prof. Steve Polanco · 4.° Grado · Vie 24 Abr 2026</div>
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <div class="tt-track"><div class="tt-thumb"></div></div>
+    <span class="tt-label" id="themeLabel">🌙 Oscuro</span>
+  </button>
+</div>
+
+<div class="layout">
+
+<!-- ══════════ ZONA HOT + OVERLAY ══════════ -->
+<div class="sidebar-hotzone" id="sidebarHotzone"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-section">
+    <div class="stitle inicio-color">🟢 INICIO · 12 min</div>
+    <div class="ni active" onclick="goTo(0)" id="nav0"><div class="ninum">1</div><div><div class="nilbl">Recibimiento</div><div class="nitime">⏱ 3 min</div></div></div>
+    <div class="ni" onclick="goTo(1)" id="nav1"><div class="ninum">2</div><div><div class="nilbl">Retroalimentación + Descubre el tema</div><div class="nitime">⏱ 6 min</div></div></div>
+    <div class="ni" onclick="goTo(2)" id="nav2"><div class="ninum">3</div><div><div class="nilbl">Intención Pedagógica</div><div class="nitime">⏱ 3 min</div></div></div>
+  </div>
+  
+  <div class="sidebar-section">
+    <div class="stitle desarrollo-color">🔵 DESARROLLO · 28 min</div>
+    <div class="ni" onclick="goTo(3)" id="nav3"><div class="ninum">4</div><div><div class="nilbl">Contextualización histórica</div><div class="nitime">⏱ 6 min</div></div></div>
+    <div class="ni" onclick="goTo(4)" id="nav4"><div class="ninum">5</div><div><div class="nilbl">Los 3 Alelos</div><div class="nitime">⏱ 5 min</div></div></div>
+    <div class="ni" onclick="goTo(5)" id="nav5"><div class="ninum">6</div><div><div class="nilbl">Genotipo → Fenotipo</div><div class="nitime">⏱ 7 min</div></div></div>
+    <div class="ni" onclick="goTo(6)" id="nav6"><div class="ninum">7</div><div><div class="nilbl">Codominancia</div><div class="nitime">⏱ 5 min</div></div></div>
+    <div class="ni" onclick="goTo(7)" id="nav7"><div class="ninum">8</div><div><div class="nilbl">Verificación formativa</div><div class="nitime">⏱ 5 min</div></div></div>
+  </div>
+  
+  <div class="sidebar-section">
+    <div class="stitle cierre-color">🟣 CIERRE · 5 min</div>
+    <div class="ni" onclick="goTo(8)" id="nav8"><div class="ninum">9</div><div><div class="nilbl">Síntesis + Metacognición</div><div class="nitime">⏱ 3 min</div></div></div>
+    <div class="ni" onclick="goTo(9)" id="nav9"><div class="ninum">10</div><div><div class="nilbl">Palabra del día + Tarea</div><div class="nitime">⏱ 2 min</div></div></div>
+  </div>
+  
+  <div class="stimer">
+    <div class="tlbl">Cronómetro · Fase: <span id="phaseLbl">Inicio</span></div>
+    <div class="tdisp" id="timerDisp">45:00</div>
+    <div class="phase-bar">
+      <div class="ph-segment ph-inicio" data-phase="inicio">Inicio</div>
+      <div class="ph-segment ph-desarrollo active" data-phase="desarrollo">Desarrollo</div>
+      <div class="ph-segment ph-cierre" data-phase="cierre">Cierre</div>
+    </div>
+    <div class="tbtns">
+      <button class="tbtn" id="timerStart" onclick="timerToggle()">▶ Start</button>
+      <button class="tbtn" onclick="timerReset()">↺</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MAIN ══════════ -->
+<div class="main">
+
+<!-- ════ SLIDE 0: RECIBIMIENTO ════ -->
+<div class="slide active" id="slide0">
+  <div class="phase-tag inicio">🟢 INICIO · Recibimiento y organización</div>
+  <div class="pauta-aspects">
+    <span class="pa-lbl">📋 Aspectos pauta:</span>
+    <span class="pa-chip">Estrategia de inicio</span>
+    <span class="pa-chip">Clima de aula</span>
+    <span class="pa-chip">Organización del tiempo</span>
+  </div>
+
+  <div class="phdr">
+    <div class="pico pir">👋</div>
+    <div><h2>¡Buenos días, hematólogos!</h2><p>Saludo · Pase de lista · Organización inicial</p></div>
+  </div>
+
+  <div class="welcome-card">
+    <div class="welcome-emoji">🩸</div>
+    <h3>Bienvenidos al Laboratorio Hemo-Lab</h3>
+    <p>Hoy investigaremos uno de los descubrimientos más importantes de la medicina: <strong>los grupos sanguíneos</strong>. Antes de empezar, organicémonos.</p>
+  </div>
+
+  <div class="rh-layout">
+    <div class="card attendance-card">
+      <div class="btitle">📝 Pase de lista digital</div>
+      <div class="att-summary">
+        <div class="att-stat">
+          <div class="att-num" id="attTotal">26</div>
+          <div class="att-lbl">Total inscritos</div>
+        </div>
+        <div class="att-stat present">
+          <div class="att-num" id="attPresent">0</div>
+          <div class="att-lbl">Presentes</div>
+        </div>
+        <div class="att-stat absent">
+          <div class="att-num" id="attAbsent">26</div>
+          <div class="att-lbl">Pendientes</div>
+        </div>
+      </div>
+      <div class="att-grid" id="attGrid"></div>
+      <div class="att-actions">
+        <button class="vbtn" onclick="markAllPresent()">✓ Todos presentes</button>
+        <button class="rstbtn" onclick="resetAttendance()">↺ Reiniciar</button>
+      </div>
+    </div>
+
+    <div class="rh-right">
+      <div class="card">
+        <div class="btitle">🎯 Hoy aprenderás a...</div>
+        <ul class="objectives-list">
+          <li><span class="obj-num">1</span> Identificar los <strong>grupos sanguíneos</strong> y los antígenos que los definen</li>
+          <li><span class="obj-num">2</span> Comprender qué son los <strong>alelos múltiples</strong></li>
+          <li><span class="obj-num">3</span> Aplicar la <strong>codominancia</strong> al caso AB</li>
+          <li><span class="obj-num">4</span> Deducir compatibilidad para <strong>transfusiones</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="snav">
+    <div></div>
+    <button class="snext" onclick="goTo(1)">Retroalimentación →</button>
+  </div>
+</div>
+
+<!-- ════ SLIDE 1: RETROALIMENTACIÓN + DESCUBRIR TEMA + ENCUESTA ════ -->
+<div class="slide" id="slide1">
+  <div class="phase-tag inicio">🟢 INICIO · Activación de saberes</div>
+  <div class="pauta-aspects">
+    <span class="pa-lbl">📋 Aspectos pauta:</span>
+    <span class="pa-chip">Recuperación metodológica</span>
+    <span class="pa-chip">Activación de saberes previos</span>
+    <span class="pa-chip">Contextualización</span>
+  </div>
+
+  <div class="phdr">
+    <div class="pico pia">🔄</div>
+    <div><h2>Conectemos con lo aprendido</h2><p>Retroalimentación de la Sesión 8 + Descubrimiento del nuevo tema</p></div>
+  </div>
+
+  <!-- A) Retroalimentación Sesión 8 -->
+  <div class="card">
+    <div class="btitle">🧠 Mini-quiz · ¿Qué recuerdas de la Sesión 8 (Epigenética)?</div>
+    <div id="retroQuiz"></div>
+  </div>
+
+  <!-- B) Descubrir el tema con imagen ampliable -->
+  <div class="card discover-card">
+    <div class="btitle">🔍 Observa la imagen · ¿Qué crees que estudiaremos hoy?</div>
+    <p class="discover-hint">Haz clic en la imagen para verla en grande. Luego, conversa con tu compañero qué observas.</p>
+    <div class="discover-img-wrap" onclick="openLightbox('discoverImg')">
+      <img id="discoverImg" src="https://images.unsplash.com/photo-1615461066841-6116e61058f4?w=800" alt="Tubos de sangre con etiquetas" class="discover-img">
+      <div class="discover-overlay">
+        <span class="zoom-icon">🔍</span>
+        <span class="zoom-text">Clic para ampliar</span>
+      </div>
+    </div>
+    <div class="discover-questions">
+      <p><strong>Preguntas guía:</strong></p>
+      <ul>
+        <li>¿Qué observas en la imagen?</li>
+        <li>¿Por qué las muestras tienen etiquetas diferentes?</li>
+        <li>¿Qué tema crees que vamos a estudiar?</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- C) Encuesta tipo de sangre -->
+  <div class="card survey-card">
+    <div class="btitle">🩸 ¿Cuál es tu tipo de sangre?</div>
+    <p class="survey-intro"><strong>Activa tus saberes previos:</strong> haz clic en tu tipo de sangre. Si no lo sabes, marca "No lo sé" — será una tarea importante averiguarlo en casa.</p>
+    <div class="blood-grid" id="bloodGrid"></div>
+
+    <div class="chart-section">
+      <div class="btitle">📊 Distribución de nuestra clase (en porcentaje)</div>
+      <div class="chart-wrap" id="chartWrap"></div>
+      <div class="chart-actions">
+        <button class="vbtn" onclick="compareRD()">🇩🇴 Comparar con población dominicana</button>
+        <button class="rstbtn" onclick="resetBlood()">↺ Reiniciar encuesta</button>
+      </div>
+      <div id="rdCompare" class="rd-compare" style="display:none">
+        <h4>🇩🇴 Distribución poblacional dominicana (aprox.)</h4>
+        <p>O+ ≈ <strong>57%</strong> · A+ ≈ <strong>28%</strong> · B+ ≈ <strong>10%</strong> · AB+ ≈ <strong>3%</strong> · negativos ≈ <strong>2%</strong></p>
+        <p class="rd-question">💬 <strong>Pregunta para discutir:</strong> ¿Coincide la distribución de la clase con la población dominicana? ¿Por qué algunos tipos son tan raros?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="snav">
+    <button class="sprev" onclick="goTo(0)">← Atrás</button>
+    <button class="snext" onclick="goTo(2)">Intención Pedagógica →</button>
+  </div>
+</div>
+
+<!-- ════ SLIDE 2: INTENCIÓN PEDAGÓGICA ════ -->
+<div class="slide" id="slide2">
+  <div class="phase-tag inicio">🟢 INICIO · Intencionalidad pedagógica</div>
+  <div class="pauta-aspects">
+    <span class="pa-lbl">📋 Aspectos pauta:</span>
+    <span class="pa-chip">Intencionalidad pedagógica</span>
+    <span class="pa-chip">Expectativas de logro</span>
+    <span class="pa-chip">Multidisciplinariedad</span>
+    <span class="pa-chip">Ejes transversales</span>
+  </div>
+
+  <div class="phdr">
+    <div class="pico pip">🎯</div>
+    <div><h2>Nuestra Misión de Hoy</h2><p>Competencias · Indicadores · Contenidos · Ejes transversales</p></div>
+  </div>
+
+  <div class="intention-grid">
+    <!-- Competencias específicas -->
+    <div class="int-card int-comp">
+      <div class="int-icon">🧠</div>
+      <h3>Competencias específicas</h3>
+      <ul>
+        <li><strong>Comunicativa:</strong> uso del lenguaje científico de la Biología</li>
+        <li><strong>Pensamiento lógico:</strong> explicaciones sobre herencia humana</li>
+        <li><strong>Resolución de problemas:</strong> deducir genotipos y compatibilidades</li>
+        <li><strong>Ambiental y salud:</strong> conciencia sobre donación de sangre</li>
+      </ul>
+    </div>
+
+    <!-- Indicadores de logro -->
+    <div class="int-card int-ind">
+      <div class="int-icon">✅</div>
+      <h3>Al final de la clase serás capaz de...</h3>
+      <ul class="check-list">
+        <li>Explicar qué son los <strong>alelos múltiples</strong> con un ejemplo</li>
+        <li>Deducir el <strong>fenotipo</strong> a partir del genotipo ABO</li>
+        <li>Identificar la <strong>codominancia</strong> en el grupo AB</li>
+        <li>Argumentar por qué hay <strong>compatibilidades e incompatibilidades</strong> en transfusiones</li>
+      </ul>
+    </div>
+
+    <!-- Contenidos -->
+    <div class="int-card int-cont">
+      <div class="int-icon">📚</div>
+      <h3>Contenidos</h3>
+      <div class="content-types">
+        <div class="ct-row"><span class="ct-badge ct-c">Conceptual</span> Grupos sanguíneos ABO · Alelos múltiples · Codominancia · Antígenos</div>
+        <div class="ct-row"><span class="ct-badge ct-p">Procedimental</span> Deducción de genotipos · Análisis de compatibilidad</div>
+        <div class="ct-row"><span class="ct-badge ct-a">Actitudinal</span> Valoración de la donación de sangre · Respeto por la diversidad</div>
+      </div>
+    </div>
+
+    <!-- Ejes transversales -->
+    <div class="int-card int-eje">
+      <div class="int-icon">🌍</div>
+      <h3>Ejes transversales</h3>
+      <div class="eje-list">
+        <div class="eje-item">
+          <span class="eje-icon">💚</span>
+          <div><strong>Salud y bienestar:</strong> donación voluntaria, transfusiones, hematopatías</div>
+        </div>
+        <div class="eje-item">
+          <span class="eje-icon">💡</span>
+          <div><strong>Alfabetización imprescindible:</strong> nociones científicas en Biología y comunicación</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="commitment-box">
+    <div class="commit-icon">🤝</div>
+    <p><strong>Acuerdo de clase:</strong> participamos con respeto, escuchamos al compañero, levantamos la mano para hablar y construimos juntos el conocimiento.</p>
+  </div>
+
+  <div class="snav">
+    <button class="sprev" onclick="goTo(1)">← Atrás</button>
+    <button class="snext" onclick="goTo(3)">Iniciar Desarrollo →</button>
+  </div>
+</div>
+
+<!-- ════ SLIDE 3: CONTEXTUALIZACIÓN HISTÓRICA ════ -->
+<div class="slide" id="slide3">
+  <div class="phase-tag desarrollo">🔵 DESARROLLO · Contextualización</div>
+  <div class="pauta-aspects">
+    <span class="pa-lbl">📋 Aspectos pauta:</span>
+    <span class="pa-chip">Contextualización</span>
+    <span class="pa-chip">Metodología de exploración</span>
+    <span class="pa-chip">Multidisciplinariedad (Historia)</span>
+    <span class="pa-chip">Trabajo individual</span>
+  </div>
+
+  <div class="phdr">
+    <div class="pico pit">📜</div>
+    <div><h2>Historia de las Transfusiones</h2><p>275 años de descubrimientos · Investigación forense</p></div>
+  </div>
+
+  <div class="tip">
+    <div class="ti">🔍</div>
+    <div><strong>Tu misión:</strong> Eres un hematólogo forense. Haz clic en cada hito de la línea del tiempo, lee el caso y responde la pregunta. Tus respuestas quedarán en el <strong>Cuaderno de Investigación</strong>.</div>
+  </div>
+
+  <div class="timeline-wrap">
+    <div class="timeline-track" id="timelineTrack"></div>
+  </div>
+
+  <div class="timeline-detail" id="timelineDetail">
+    <div class="td-empty">👆 Haz clic en un hito para explorarlo</div>
+  </div>
+
+  <div class="card investigation-log">
+    <div class="btitle">📓 Cuaderno de Investigación</div>
+    <div id="investLog" class="invest-empty">Aún no has registrado descubrimientos...</div>
+  </div>
+
+  <div class="snav">
+    <button class="sprev" onclick="goTo(2)">← Atrás</button>
+    <button class="snext" onclick="goTo(4)">Los 3 Alelos →</button>
+  </div>
+</div>
+
+<!-- ════ SLIDE 4: LOS 3 ALELOS — PELUCHES CON PEGATINAS ════ -->
+<div class="slide" id="slide4">
+  <div class="phase-tag desarrollo">🔵 DESARROLLO · Conceptualización</div>
+  <div class="pauta-aspects">
+    <span class="pa-lbl">📋 Aspectos pauta:</span>
+    <span class="pa-chip">Metodología expositiva-elaboración</span>
+    <span class="pa-chip">Contenido conceptual</span>
+    <span class="pa-chip">Recursos didácticos</span>
+    <span class="pa-chip">Contextualización significativa</span>
+  </div>
+
+  <div class="phdr">
+    <div class="pico pia">🧸</div>
+    <div><h2>Los 4 Tipos de Glóbulos Rojos</h2><p>Analogía: como los uniformes escolares con sus logos</p></div>
+  </div>
+
+  <div class="analogy-box">
+    <div class="aqlbl-amber">💡 Analogía cercana</div>
+    <p>Piensen en los <strong>uniformes del Politécnico Juan Emilio Bosch</strong>. Todos los estudiantes usan el mismo uniforme base, pero el <strong>logo en el bolsillo</strong> dice a qué área pertenecen: Mercadeo, Turismo, etc. Si vemos a alguien con dos logos, sabemos que pertenece a ambas áreas. Si no tiene logo... no sabemos a cuál pertenece.</p>
+    <p style="margin-top:10px"><strong>Los glóbulos rojos funcionan igual:</strong> todos son el mismo "peluche rojo", pero las <strong>pegatinas (antígenos)</strong> en su superficie indican el grupo sanguíneo.</p>
+  </div>
+
+  <div class="plush-grid">
+    <!-- Tipo A -->
+    <div class="plush-card" data-type="A">
+      <div class="plush-rbc" id="plushA"></div>
+      <div class="plush-label">
+        <div class="plush-type">Grupo A</div>
+        <div class="plush-sticker">🔺 Pegatina A</div>
+      </div>
+      <div class="plush-geno">Genotipo: I<sup>A</sup>I<sup>A</sup> o I<sup>A</sup>i</div>
+    </div>
+
+    <!-- Tipo B -->
+    <div class="plush-card" data-type="B">
+      <div class="plush-rbc" id="plushB"></div>
+      <div class="plush-label">
+        <div class="plush-type">Grupo B</div>
+        <div class="plush-sticker">🟦 Pegatina B</div>
+      </div>
+      <div class="plush-geno">Genotipo: I<sup>B</sup>I<sup>B</sup> o I<sup>B</sup>i</div>
+    </div>
+
+    <!-- Tipo AB -->
+    <div class="plush-card plush-featured" data-type="AB">
+      <div class="plush-rbc" id="plushAB"></div>
+      <div class="plush-label">
+        <div class="plush-type">Grupo AB ⭐</div>
+        <div class="plush-sticker">🔺🟦 Ambas pegatinas</div>
+      </div>
+      <div class="plush-geno">Genotipo: I<sup>A</sup>I<sup>B</sup></div>
+      <div class="plush-special">Codominancia: ¡los dos logos visibles!</div>
+    </div>
+
+    <!-- Tipo O -->
+    <div class="plush-card" data-type="O">
+      <div class="plush-rbc" id="plushO"></div>
+      <div class="plush-label">
+        <div class="plush-type">Grupo O</div>
+        <div class="plush-sticker">⚪ Sin pegatinas</div>
+      </div>
+      <div class="plush-geno">Genotipo: ii</div>
+    </div>
+  </div>
+
+  <div class="card multi-allele">
+    <div class="btitle">📚 Concepto clave · Alelos múltiples</div>
+    <p>A diferencia de otros genes que solo tienen 2 alelos (dominante y recesivo), el gen ABO tiene <strong>3 alelos posibles en la población</strong>: I<sup>A</sup>, I<sup>B</sup> e i. Aunque cada persona solo lleva 2 (uno de cada progenitor), estas combinaciones generan los 4 grupos sanguíneos posibles.</p>
+    <div class="formula-row">
+      <span class="formula-pill">I<sup>A</sup></span>
+      <span class="formula-plus">+</span>
+      <span class="formula-pill">I<sup>B</sup></span>
+      <span class="formula-plus">+</span>
+      <span class="formula-pill">i</span>
+      <span class="formula-eq">= 3 alelos en la población</span>
+    </div>
+  </div>
+
+  <div class="snav">
+    <button class="sprev" onclick="goTo(3)">← Atrás</button>
+    <button class="snext" onclick="goTo(5)">Constructor →</button>
+  </div>
+</div>
+
+<!-- ════ SLIDE 5: CONSTRUCTOR GENOTIPO→FENOTIPO ════ -->
+<div class="slide" id="slide5">
+  <div class="phase-tag desarrollo">🔵 DESARROLLO · Construcción del conocimiento</div>
+  <div class="pauta-aspects">
+    <span class="pa-lbl">📋 Aspectos pauta:</span>
+    <span class="pa-chip">Construcción del conocimiento</span>
+    <span class="pa-chip">Trabajo individual + pares</span>
+    <span class="pa-chip">Resolución de problemas</span>
+    <span class="pa-chip">Evaluación formativa</span>
+  </div>
+
+  <div class="phdr">
+    <div class="pico pir">🧪</div>
+    <div><h2>Constructor Genotipo → Fenotipo</h2><p>Deduce qué grupo sanguíneo produce cada combinación</p></div>
+  </div>
+
+  <div class="tip">
+    <div class="ti">📝</div>
+    <div><strong>Instrucción:</strong> Trabajen en parejas. Hagan clic en cada celda y elijan el grupo correcto. Recuerden: I<sup>A</sup> e I<sup>B</sup> son <strong>dominantes</strong> sobre i, pero <strong>codominantes entre sí</strong>.</div>
+  </div>
+
+  <div class="geno-table-wrap">
+    <table class="geno-table" id="genoTable"></table>
+  </div>
+
+  <div class="geno-actions">
+    <button class="vbtn" onclick="checkGenoTable()">✓ Verificar respuestas</button>
+    <button class="aabtn" onclick="revealGenoTable()">⚡ Revelar todo</button>
+    <button class="rstbtn" onclick="resetGenoTable()">↺ Reiniciar</button>
+  </div>
+
+  <div id="genoFeedback"></div>
+
+  <div class="snav">
+    <button class="sprev" onclick="goTo(4)">← Atrás</button>
+    <button class="snext" onclick="goTo(6)">Codominancia →</button>
+  </div>
+</div>
+
+<!-- ════ SLIDE 6: CODOMINANCIA + COMPATIBILIDAD ════ -->
+<div class="slide" id="slide6">
+  <div class="phase-tag desarrollo">🔵 DESARROLLO · Profundización</div>
+  <div class="pauta-aspects">
+    <span class="pa-lbl">📋 Aspectos pauta:</span>
+    <span class="pa-chip">Profundización del conocimiento</span>
+    <span class="pa-chip">Contenido procedimental</span>
+    <span class="pa-chip">Multidisciplinariedad (Salud)</span>
+    <span class="pa-chip">Ejes transversales</span>
+  </div>
+
+  <div class="phdr">
+    <div class="pico pip">⚖️</div>
+    <div><h2>Codominancia + Compatibilidad</h2><p>Cuando ambos alelos mandan · Aplicación práctica</p></div>
+  </div>
+
+  <div class="codom-compare">
+    <div class="codom-col">
+      <div class="codom-title">Dominancia completa</div>
+      <div class="codom-example">Aa → Solo se ve A</div>
+      <div class="codom-visual">🌷</div>
+      <div class="codom-desc">Un alelo "gana" sobre el otro. El recesivo queda oculto.</div>
+    </div>
+    <div class="codom-col codom-featured">
+      <div class="codom-title">Codominancia ⭐</div>
+      <div class="codom-example">I<sup>A</sup>I<sup>B</sup> → AMBOS</div>
+      <div class="codom-visual">🔺🟦</div>
+      <div class="codom-desc"><strong>Ambos antígenos se expresan</strong> al mismo tiempo. Ninguno manda.</div>
+    </div>
+    <div class="codom-col">
+      <div class="codom-title">Homocigoto recesivo</div>
+      <div class="codom-example">ii → Sin antígenos</div>
+      <div class="codom-visual">⚪</div>
+      <div class="codom-desc">Ninguno produce antígeno. Grupo O.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="btitle">🩸 Compatibilidad de transfusiones · Eje transversal: Salud</div>
+    <p class="compat-intro">Selecciona tu tipo de sangre y descubre a quién puedes <strong>donar</strong> y de quién puedes <strong>recibir</strong>:</p>
+    <div class="compat-selector" id="compatSelector"></div>
+    <div class="compat-result" id="compatResult" style="display:none"></div>
+  </div>
+
+  <div class="snav">
+    <button class="sprev" onclick="goTo(5)">← Atrás</button>
+    <button class="snext" onclick="goTo(7)">Verificación →</button>
+  </div>
+</div>
+
+<!-- ════ SLIDE 7: VERIFICACIÓN FORMATIVA ════ -->
+<div class="slide" id="slide7">
+  <div class="phase-tag desarrollo">🔵 DESARROLLO · Evaluación formativa</div>
+  <div class="pauta-aspects">
+    <span class="pa-lbl">📋 Aspectos pauta:</span>
+    <span class="pa-chip">Evaluación formativa</span>
+    <span class="pa-chip">Retroalimentación inmediata</span>
+    <span class="pa-chip">Uso constructivo del error</span>
+    <span class="pa-chip">Resultados de aprendizaje</span>
+  </div>
+
+  <div class="phdr">
+    <div class="pico pir">🔬</div>
+    <div><h2>Caso Clínico</h2><p>Pongamos a prueba lo aprendido</p></div>
+  </div>
+
+  <div class="case-card">
+    <div class="case-icon">👨‍⚕️</div>
+    <div class="case-content">
+      <h3>El caso de la familia Pérez</h3>
+      <p><strong>Juan</strong> tiene grupo sanguíneo <span class="blood-tag blood-A">A</span>, su esposa <strong>María</strong> tiene grupo <span class="blood-tag blood-B">B</span>. Cuando nace su hijo <strong>Pedro</strong>, los análisis muestran que es del grupo <span class="blood-tag blood-O">O</span>.</p>
+      <p class="case-question">💬 La abuela paterna sospecha que el niño no es de Juan. <strong>¿Es posible que Pedro sea hijo biológico de Juan y María?</strong></p>
+    </div>
+  </div>
+
+  <div class="case-options">
+    <div class="case-opt" onclick="answerCase(0)">
+      <div class="case-letter">A</div>
+      <div class="case-text">No es posible. Si los padres son A y B, el hijo no puede ser O.</div>
+    </div>
+    <div class="case-opt" onclick="answerCase(1)">
+      <div class="case-letter">B</div>
+      <div class="case-text">Sí es posible si ambos padres son heterocigotos (I<sup>A</sup>i e I<sup>B</sup>i).</div>
+    </div>
+    <div class="case-opt" onclick="answerCase(2)">
+      <div class="case-letter">C</div>
+      <div class="case-text">Solo es posible si la madre es realmente del grupo O.</div>
+    </div>
+  </div>
+
+  <div id="caseFeedback" class="case-feedback"></div>
+
+  <div class="snav">
+    <button class="sprev" onclick="goTo(6)">← Atrás</button>
+    <button class="snext" onclick="goTo(8)">Cierre →</button>
+  </div>
+</div>
+
+<!-- ════ SLIDE 8: SÍNTESIS + METACOGNICIÓN ════ -->
+<div class="slide" id="slide8">
+  <div class="phase-tag cierre">🟣 CIERRE · Síntesis y metacognición</div>
+  <div class="pauta-aspects">
+    <span class="pa-lbl">📋 Aspectos pauta:</span>
+    <span class="pa-chip">Resumen/conclusiones</span>
+    <span class="pa-chip">Metacognición</span>
+    <span class="pa-chip">Evaluación final</span>
+  </div>
+
+  <div class="phdr">
+    <div class="pico pip">🎯</div>
+    <div><h2>Síntesis y Reflexión</h2><p>¿Qué aprendiste hoy? · Mini-quiz de salida · Autoevaluación</p></div>
+  </div>
+
+  <!-- Síntesis -->
+  <div class="card synthesis-card">
+    <div class="btitle">📝 Mi síntesis personal</div>
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:12px">Completa la frase con tus propias palabras:</p>
+    <div class="synth-row">
+      <label>🆕 Hoy aprendí que...</label>
+      <textarea class="synth-input" id="synth1" placeholder="Escribe aquí tu aprendizaje principal..."></textarea>
+    </div>
+    <div class="synth-row">
+      <label>🤔 Lo que más me sorprendió fue...</label>
+      <textarea class="synth-input" id="synth2" placeholder="Una idea, dato o concepto que te llamó la atención..."></textarea>
+    </div>
+    <div class="synth-row">
+      <label>❓ Aún tengo dudas sobre...</label>
+      <textarea class="synth-input" id="synth3" placeholder="Algo que quisieras profundizar o que no quedó claro..."></textarea>
+    </div>
+  </div>
+
+  <!-- Mini-quiz de salida -->
+  <div class="card">
+    <div class="btitle">⭐ Mini-quiz de salida (3 preguntas)</div>
+    <div id="exitQuiz"></div>
+    <div id="exitScore" style="display:none"></div>
+  </div>
+
+  <!-- Rúbrica metacognitiva -->
+  <div class="card meta-card">
+    <div class="btitle">🪞 Rúbrica metacognitiva · Autoevaluación</div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:14px">Marca tu nivel del 1 al 4 (1=poco, 4=mucho):</p>
+    <table class="meta-table" id="metaTable"></table>
+  </div>
+
+  <div class="snav">
+    <button class="sprev" onclick="goTo(7)">← Atrás</button>
+    <button class="snext" onclick="goTo(9)">Cierre final →</button>
+  </div>
+</div>
+
+<!-- ════ SLIDE 9: PALABRA DEL DÍA + TAREA + ANTICIPACIÓN ════ -->
+<div class="slide" id="slide9">
+  <div class="phase-tag cierre">🟣 CIERRE · Consolidación y proyección</div>
+  <div class="pauta-aspects">
+    <span class="pa-lbl">📋 Aspectos pauta:</span>
+    <span class="pa-chip">Asignación de tareas</span>
+    <span class="pa-chip">Glosario / consolidación</span>
+    <span class="pa-chip">Articulación con próxima sesión</span>
+  </div>
+
+  <div class="phdr">
+    <div class="pico pip">🎁</div>
+    <div><h2>Hasta aquí llegamos hoy</h2><p>Palabra del día · Glosario · Tarea</p></div>
+  </div>
+
+  <!-- Palabra del día -->
+  <div class="word-final">
+    <div class="word-final-lbl">🔓 PALABRA DEL DÍA</div>
+    <div class="word-final-name">AGLUTINACIÓN</div>
+    <div class="word-final-def">Reacción donde los <strong>anticuerpos</strong> del receptor reconocen <strong>antígenos extraños</strong> en los glóbulos rojos donados y los aglomeran, causando coágulos peligrosos. <strong>Es la razón biológica</strong> por la que las transfusiones incompatibles son mortales.</div>
+  </div>
+
+  <!-- Glosario -->
+  <div class="card">
+    <div class="btitle">📝 Glosario de la Sesión 9</div>
+    <div class="glossary-grid">
+      <div class="gloss-item"><strong>Alelos múltiples</strong><span>Más de 2 versiones de un gen en la población.</span></div>
+      <div class="gloss-item"><strong>Codominancia</strong><span>Ambos alelos se expresan al mismo tiempo.</span></div>
+      <div class="gloss-item"><strong>Antígeno</strong><span>Marcador molecular en la superficie del glóbulo rojo.</span></div>
+      <div class="gloss-item"><strong>Grupo sanguíneo</strong><span>Clasificación según antígenos: A, B, AB, O.</span></div>
+      <div class="gloss-item"><strong>Aglutinación</strong><span>Aglomeración de glóbulos rojos por incompatibilidad.</span></div>
+      <div class="gloss-item"><strong>Donante universal</strong><span>Persona con grupo O- que puede donar a cualquiera.</span></div>
+    </div>
+    <button class="vbtn" onclick="exportEvidence()" style="margin-top:14px">📥 Exportar evidencias de la clase</button>
+  </div>
+
+  <!-- Tarea -->
+  <div class="homework">
+    <div class="hwtit">📦 Tarea para la Sesión 10</div>
+    <div class="hwit"><div class="hwdot"></div><div>Resolver en parejas <strong>Problema 1 — ejercicio a)</strong>: cruce I<sup>A</sup>I<sup>B</sup> × I<sup>A</sup>I<sup>B</sup>. Anotar genotipos y fenotipos posibles.</div></div>
+    <div class="hwit"><div class="hwdot"></div><div><strong>Ejercicio b)</strong>: Madre grupo A (con abuela materna grupo O) × Padre grupo B (con abuelo paterno grupo O).</div></div>
+    <div class="hwit"><div class="hwdot"></div><div><strong>Si no sabes tu tipo de sangre</strong>: pregunta en casa o consulta tu cédula/seguro médico. ¡Tráelo a la próxima clase!</div></div>
+  </div>
+
+  <!-- Anticipación -->
+  <div class="next-session">
+    <div class="ns-lbl">🔮 La próxima clase (Sesión 10) — Lunes 27 de abril</div>
+    <p>Estudiaremos el <strong>Factor Rh</strong> y la herencia de <strong>2 caracteres simultáneos</strong>. Veremos por qué hay 8 grupos sanguíneos posibles y elaboraremos un folleto sobre donación de sangre voluntaria.</p>
+  </div>
+  <!-- ════ HOJA DE RESPUESTAS IMPRIMIBLE ════ -->
+  <div class="card report-card">
+    <div class="btitle">📋 Hoja de Respuestas · Informe para el Docente</div>
+    <p style="margin-bottom:14px;font-size:.92rem;color:var(--muted)">
+      Completa tus datos y haz clic en <strong>"Generar hoja de respuestas"</strong>.
+      Luego pulsa <strong>"🖨️ Imprimir / Guardar PDF"</strong> y sube el archivo a Moodle.
+    </p>
+
+    <div class="report-form">
+      <div class="rf-row">
+        <label>👤 Nombre completo:</label>
+        <input type="text" id="rpStudentName" placeholder="Ej: Juan Pérez Rodríguez">
+      </div>
+      <div class="rf-row">
+        <label>🆔 Matrícula / N° de lista:</label>
+        <input type="text" id="rpStudentId" placeholder="Ej: 4to-A · #15">
+      </div>
+      <div class="rf-row">
+        <label>📅 Sección:</label>
+        <input type="text" id="rpSection" placeholder="Ej: 4to A · Ciencias Naturales" value="4to · Sesión 9">
+      </div>
+    </div>
+
+    <div class="report-actions">
+      <button class="vbtn" onclick="generateReport()">📝 Generar hoja de respuestas</button>
+      <button class="aabtn" onclick="printReport()" id="printBtn" disabled>🖨️ Imprimir / Guardar PDF</button>
+    </div>
+
+    <div id="reportPreview" class="report-preview" style="display:none"></div>
+  </div>
+
+  <div class="snav">
+    <button class="sprev" onclick="goTo(8)">← Atrás</button>
+    <button class="snext" disabled>✓ Fin de Sesión 9</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- ══════════ LIGHTBOX para imágenes ampliadas ══════════ -->
+<div class="lightbox" id="lightbox" onclick="closeLightboxBg(event)">
+  <button class="lb-close" onclick="closeLightbox()">✕ Cerrar</button>
+  <img class="lb-img" id="lbImg" src="" alt="">
+</div>
+
+<!-- ══════════ MODAL PAUTA ETNOGRÁFICA ══════════ -->
+<div class="pauta-modal" id="pautaModal">
+  <div class="pm-content">
+    <button class="pm-close" onclick="closePautaModal()">✕</button>
+    <h2>📋 Pauta Etnográfica · Aspectos cubiertos hoy</h2>
+    <p class="pm-intro">Esta clase está estructurada para evidenciar todos los aspectos solicitados por la Pauta Etnográfica de Observación de Clases (EDD 2025-2026).</p>
+    
+    <div class="pm-section">
+      <h3>🟢 §3 INICIO</h3>
+      <ul>
+        <li>✓ Saludo y recibimiento (Slide 1)</li>
+        <li>✓ Pase de lista digital (Slide 1)</li>
+        <li>✓ Retroalimentación clase anterior (Slide 2)</li>
+        <li>✓ Activación de saberes previos con encuesta de sangre (Slide 2)</li>
+        <li>✓ Intencionalidad pedagógica explícita (Slide 3)</li>
+        <li>✓ Competencias, indicadores y contenidos visibles (Slide 3)</li>
+        <li>✓ Expectativas de logro comunicadas (Slide 3)</li>
+      </ul>
+    </div>
+    
+    <div class="pm-section">
+      <h3>🔵 §4 DESARROLLO</h3>
+      <ul>
+        <li>✓ Contextualización con historia real (Slide 4)</li>
+        <li>✓ Metodología de exploración e investigación (Slide 4)</li>
+        <li>✓ Multidisciplinariedad: Biología + Historia + Salud (Slides 4, 7)</li>
+        <li>✓ Ejes transversales: Salud y bienestar (Slide 7)</li>
+        <li>✓ Recursos didácticos digitales (todas)</li>
+        <li>✓ Contenidos conceptuales, procedimentales y actitudinales (Slide 3)</li>
+        <li>✓ Actividades de construcción del conocimiento (Slide 6)</li>
+        <li>✓ Trabajo individual y por pares (Slide 6)</li>
+        <li>✓ Evaluación formativa con caso clínico (Slide 8)</li>
+        <li>✓ Retroalimentación inmediata (Slide 8)</li>
+      </ul>
+    </div>
+    
+    <div class="pm-section">
+      <h3>🟣 §5 CIERRE</h3>
+      <ul>
+        <li>✓ Síntesis personal del estudiante (Slide 9)</li>
+        <li>✓ Mini-quiz de salida con feedback (Slide 9)</li>
+        <li>✓ Rúbrica metacognitiva 1-4 (Slide 9)</li>
+        <li>✓ Glosario consolidado (Slide 10)</li>
+        <li>✓ Asignación de tareas (Slide 10)</li>
+        <li>✓ Anticipación próxima sesión (Slide 10)</li>
+      </ul>
+    </div>
+  </div>
+</div>  
+
+<!-- ══════════ FAB Ruleta de turnos ══════════ -->
+<button class="fab-roulette" onclick="spinStudentFab()" title="Ruleta de turnos">
+  🎲
+  <span class="fab-result" id="fabResult"></span>
+</button>
+
+<script src="app.js"></script>
+</body>
+</html>
