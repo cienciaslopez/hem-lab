@@ -934,3 +934,166 @@ function generateReport() {
 function printReport() {
   window.print();
 }
+/* ════════════════════════════════════════════════
+   TANDA 1 · Ajustes generales + Inicio
+   ════════════════════════════════════════════════ */
+
+/* ═════════ CÓDIGO SECRETO (1213) ═════════ */
+const SECRET_CODE = '1213';
+let secretTarget = null; // 'pauta' | 'genoReveal'
+
+function requestPautaAccess() {
+  secretTarget = 'pauta';
+  openSecretModal('Acceso a la Pauta Etnográfica · Solo docente.');
+}
+function requestGenoReveal() {
+  secretTarget = 'genoReveal';
+  openSecretModal('Función "Revelar todo" · Solo docente.');
+}
+
+function openSecretModal(desc) {
+  document.getElementById('secretDesc').textContent = desc;
+  document.getElementById('secretError').textContent = '';
+  const input = document.getElementById('secretInput');
+  input.value = '';
+  input.classList.remove('shake');
+  document.getElementById('secretModal').classList.add('open');
+  setTimeout(() => input.focus(), 100);
+}
+function closeSecretModal() {
+  document.getElementById('secretModal').classList.remove('open');
+  secretTarget = null;
+}
+function validateSecret() {
+  const input = document.getElementById('secretInput');
+  const err = document.getElementById('secretError');
+  if (input.value === SECRET_CODE) {
+    const target = secretTarget;
+    closeSecretModal();
+    if (target === 'pauta') openPautaModal();
+    else if (target === 'genoReveal') revealGenoTable();
+  } else {
+    err.textContent = '❌ Código incorrecto. Inténtalo de nuevo.';
+    input.classList.add('shake');
+    setTimeout(() => input.classList.remove('shake'), 400);
+    input.value = '';
+    input.focus();
+  }
+}
+
+// Enter para validar
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && document.getElementById('secretModal').classList.contains('open')) {
+    validateSecret();
+  }
+});
+
+/* ═════════ MINI-JUEGO 4 FOTOS 1 PALABRA ═════════ */
+const WG_WORD = 'SANGRE';
+let wgFilled = [];
+
+function buildWordGame() {
+  const slots = document.getElementById('wgSlots');
+  const letters = document.getElementById('wgLetters');
+  if (!slots || !letters) return;
+
+  // Crear slots vacíos según longitud de la palabra
+  slots.innerHTML = '';
+  wgFilled = Array(WG_WORD.length).fill(null);
+  for (let i = 0; i < WG_WORD.length; i++) {
+    const s = document.createElement('div');
+    s.className = 'wg-slot';
+    s.id = 'wgSlot' + i;
+    s.onclick = () => wgUnfill(i);
+    slots.appendChild(s);
+  }
+
+  // Crear pool de letras: letras de la palabra + 4 letras distractoras, mezcladas
+  const pool = WG_WORD.split('').concat(['T','M','I','L']);
+  shuffle(pool);
+  letters.innerHTML = '';
+  pool.forEach((ch, idx) => {
+    const b = document.createElement('button');
+    b.className = 'wg-letter';
+    b.textContent = ch;
+    b.dataset.idx = idx;
+    b.onclick = () => wgFill(ch, b);
+    letters.appendChild(b);
+  });
+}
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+function wgFill(ch, btn) {
+  const idx = wgFilled.findIndex(x => x === null);
+  if (idx === -1) return;
+  wgFilled[idx] = { ch, btnIdx: btn.dataset.idx };
+  const slot = document.getElementById('wgSlot' + idx);
+  slot.textContent = ch;
+  slot.classList.add('filled');
+  btn.classList.add('used');
+}
+function wgUnfill(idx) {
+  if (!wgFilled[idx]) return;
+  const { btnIdx } = wgFilled[idx];
+  wgFilled[idx] = null;
+  const slot = document.getElementById('wgSlot' + idx);
+  slot.textContent = '';
+  slot.classList.remove('filled', 'correct', 'wrong');
+  const btn = document.querySelector(`.wg-letter[data-idx="${btnIdx}"]`);
+  if (btn) btn.classList.remove('used');
+}
+function wgClear() {
+  wgFilled.forEach((_, i) => wgUnfill(i));
+  document.getElementById('wgFeedback').textContent = '';
+  document.getElementById('wgFeedback').className = 'wg-feedback';
+}
+function wgCheck() {
+  const fb = document.getElementById('wgFeedback');
+  if (wgFilled.some(x => x === null)) {
+    fb.textContent = '⚠️ Completa todas las letras antes de comprobar.';
+    fb.className = 'wg-feedback bad';
+    return;
+  }
+  const guess = wgFilled.map(x => x.ch).join('');
+  if (guess === WG_WORD) {
+    // Marcar todos los slots como correctos
+    for (let i = 0; i < WG_WORD.length; i++) {
+      const s = document.getElementById('wgSlot' + i);
+      s.classList.remove('filled');
+      s.classList.add('correct');
+    }
+    fb.textContent = '🎉 ¡Exacto! Has descubierto la palabra clave.';
+    fb.className = 'wg-feedback ok';
+    // Revelar el tema con animación tras un breve delay
+    setTimeout(() => {
+      const reveal = document.getElementById('topicReveal');
+      if (reveal) {
+        reveal.classList.add('show');
+        reveal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 800);
+  } else {
+    for (let i = 0; i < WG_WORD.length; i++) {
+      const s = document.getElementById('wgSlot' + i);
+      if (wgFilled[i].ch !== WG_WORD[i]) {
+        s.classList.remove('filled');
+        s.classList.add('wrong');
+      } else {
+        s.classList.remove('filled');
+        s.classList.add('correct');
+      }
+    }
+    fb.textContent = '❌ Casi… revisa las letras marcadas en rojo y ajusta.';
+    fb.className = 'wg-feedback bad';
+  }
+}
+
+/* ═════════ INICIALIZACIÓN del mini-juego ═════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  buildWordGame();
+});
+
