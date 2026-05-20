@@ -19,7 +19,7 @@
   <div class="stag">Sesión 9</div>
   <h1>🩸 Hemo-Lab: Decodificando la Sangre</h1>
   <div class="progress" id="topProg"></div>
-  <button class="pauta-btn" onclick="openPautaModal()" title="Ver Pauta Etnográfica">📋 Pauta</button>
+  <button class="pauta-btn" onclick="requestPautaAccess()" title="Pauta Etnográfica (solo docente)">🔒 Pauta</button>
   <div class="prof">Prof. Steve Polanco · 4.° Grado · Vie 24 Abr 2026</div>
   <button class="theme-toggle" onclick="toggleTheme()">
     <div class="tt-track"><div class="tt-thumb"></div></div>
@@ -179,6 +179,39 @@
         <li>¿Qué tema crees que vamos a estudiar?</li>
       </ul>
     </div>
+
+    <!-- ══ MINI-JUEGO: 4 FOTOS, 1 PALABRA ══ -->
+    <div class="word-game" id="wordGame">
+      <div class="wg-header">
+        <span class="wg-tag">🎮 Mini-reto</span>
+        <h4>4 imágenes, 1 palabra</h4>
+        <p>Observa las 4 imágenes. ¿Qué palabra de <strong>6 letras</strong> las conecta?</p>
+      </div>
+
+      <div class="wg-photos">
+        <div class="wg-photo"><img src="https://images.unsplash.com/photo-1615461066159-fea0960485d5?w=400" alt="Gota de sangre"></div>
+        <div class="wg-photo"><img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?w=400" alt="Transfusión"></div>
+        <div class="wg-photo"><img src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=400" alt="Corazón/circulación"></div>
+        <div class="wg-photo"><img src="https://images.unsplash.com/photo-1559757175-5700dde675bc?w=400" alt="Análisis clínico"></div>
+      </div>
+
+      <div class="wg-slots" id="wgSlots"></div>
+      <div class="wg-letters" id="wgLetters"></div>
+
+      <div class="wg-actions">
+        <button class="rstbtn" onclick="wgClear()">↺ Borrar</button>
+        <button class="vbtn" onclick="wgCheck()">✓ Comprobar</button>
+      </div>
+      <div class="wg-feedback" id="wgFeedback"></div>
+    </div>
+
+    <!-- ══ REVELACIÓN DEL TEMA (oculta hasta resolver) ══ -->
+    <div class="topic-reveal" id="topicReveal">
+      <div class="tr-emoji">🎉</div>
+      <div class="tr-label">Tema de hoy</div>
+      <h2 class="tr-title">Los Grupos Sanguíneos</h2>
+      <p class="tr-subtitle">Sistema ABO · Alelos múltiples · Codominancia</p>
+    </div>
   </div>
 
   <!-- C) Encuesta tipo de sangre -->
@@ -287,7 +320,6 @@
     <button class="snext" onclick="goTo(3)">Iniciar Desarrollo →</button>
   </div>
 </div>
-
 <!-- ════ SLIDE 3: CONTEXTUALIZACIÓN HISTÓRICA ════ -->
 <div class="slide" id="slide3">
   <div class="phase-tag desarrollo">🔵 DESARROLLO · Contextualización</div>
@@ -297,6 +329,16 @@
     <span class="pa-chip">Metodología de exploración</span>
     <span class="pa-chip">Multidisciplinariedad (Historia)</span>
     <span class="pa-chip">Trabajo individual</span>
+  </div>
+
+  <!-- ══ Indicador de organización grupal (visible al entrar a Desarrollo) ══ -->
+  <div class="group-banner">
+    <div class="gb-icon">👥</div>
+    <div class="gb-text">
+      <strong>¡Comienza el trabajo en equipo!</strong>
+      <span>Formen los <strong>grupos pre-asignados</strong> y abran los dispositivos (tablets/laptops) ubicados en cada mesa.</span>
+    </div>
+    <button class="gb-ack" onclick="this.parentElement.classList.add('ack')">✓ Listo</button>
   </div>
 
   <div class="phdr">
@@ -651,6 +693,7 @@
     <div class="ns-lbl">🔮 La próxima clase (Sesión 10) — Lunes 27 de abril</div>
     <p>Estudiaremos el <strong>Factor Rh</strong> y la herencia de <strong>2 caracteres simultáneos</strong>. Veremos por qué hay 8 grupos sanguíneos posibles y elaboraremos un folleto sobre donación de sangre voluntaria.</p>
   </div>
+
   <!-- ════ HOJA DE RESPUESTAS IMPRIMIBLE ════ -->
   <div class="card report-card">
     <div class="btitle">📋 Hoja de Respuestas · Informe para el Docente</div>
@@ -695,6 +738,22 @@
 <div class="lightbox" id="lightbox" onclick="closeLightboxBg(event)">
   <button class="lb-close" onclick="closeLightbox()">✕ Cerrar</button>
   <img class="lb-img" id="lbImg" src="" alt="">
+</div>
+
+<!-- ══════════ MODAL CÓDIGO SECRETO ══════════ -->
+<div class="secret-modal" id="secretModal">
+  <div class="sm-content">
+    <button class="sm-close" onclick="closeSecretModal()">✕</button>
+    <div class="sm-icon">🔒</div>
+    <h3>Acceso restringido</h3>
+    <p class="sm-desc" id="secretDesc">Esta sección es de uso exclusivo del docente.</p>
+    <input type="password" id="secretInput" class="sm-input" placeholder="• • • •" maxlength="4" autocomplete="off">
+    <div class="sm-error" id="secretError"></div>
+    <div class="sm-actions">
+      <button class="rstbtn" onclick="closeSecretModal()">Cancelar</button>
+      <button class="vbtn" onclick="validateSecret()">Desbloquear</button>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════ MODAL PAUTA ETNOGRÁFICA ══════════ -->
@@ -756,3 +815,4 @@
 <script src="app.js"></script>
 </body>
 </html>
+
