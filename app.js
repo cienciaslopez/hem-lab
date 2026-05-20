@@ -1096,4 +1096,594 @@ function wgCheck() {
 window.addEventListener('DOMContentLoaded', () => {
   buildWordGame();
 });
+/* ════════════════════════════════════════════════
+   TANDA 2 · Intención + Historia + Bios
+   ════════════════════════════════════════════════ */
+
+/* ═════════ INTENCIÓN PEDAGÓGICA GRANDE ═════════ */
+STATE.intentionAchieved = false;
+STATE.intentionAnswer = null;
+STATE.intentionScale = null;
+
+function markIntentionAchieved() {
+  const cb = document.getElementById('biChecked');
+  STATE.intentionAchieved = cb.checked;
+  document.getElementById('biCheckBox').classList.toggle('checked', cb.checked);
+}
+
+function checkIntention(idx, btn) {
+  if (STATE.intentionAnswer !== null) return;
+  STATE.intentionAnswer = idx;
+  const opts = btn.parentElement.querySelectorAll('.ic-opt');
+  opts.forEach((o, i) => {
+    if (o.dataset.correct === 'true') o.classList.add('correct');
+    else if (i === idx) o.classList.add('wrong');
+    o.style.pointerEvents = 'none';
+  });
+  const fb = document.getElementById('icFeedback');
+  fb.classList.add('show');
+  if (btn.dataset.correct === 'true') {
+    fb.className = 'ic-feedback show ok';
+    fb.textContent = '🎯 ¡Correcto! Esa fue exactamente la intención que planteamos al inicio.';
+  } else {
+    fb.className = 'ic-feedback show bad';
+    fb.textContent = '📝 Esa no era. Revisa la opción marcada en verde — esa era la intención de hoy.';
+  }
+}
+
+function setIntentionScale(level, btn) {
+  STATE.intentionScale = level;
+  btn.parentElement.querySelectorAll('.ic-scale-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ═════════ BIOS DE CIENTÍFICOS (hover Wikipedia-style) ═════════ */
+const SCIENTISTS = {
+  'harvey': {
+    name: 'William Harvey',
+    meta: 'Inglaterra · 1578-1657 · Médico',
+    text: 'Médico inglés que en 1628 describió por primera vez con precisión la circulación de la sangre en el cuerpo humano, demostrando que el corazón actúa como bomba. Su obra "De Motu Cordis" sentó las bases de la fisiología moderna.'
+  },
+  'lower': {
+    name: 'Richard Lower',
+    meta: 'Inglaterra · 1631-1691 · Médico',
+    text: 'Realizó en 1665 la primera transfusión sanguínea documentada entre dos perros en Oxford. Sus experimentos abrieron el camino a la medicina transfusional, aunque sin entender aún por qué algunas transfusiones eran mortales.'
+  },
+  'blundell': {
+    name: 'James Blundell',
+    meta: 'Inglaterra · 1791-1878 · Obstetra',
+    text: 'Pionero de la transfusión humano-humano. En 1818 salvó la vida de una mujer con hemorragia posparto mediante transfusión de sangre. Diseñó instrumental específico para el procedimiento.'
+  },
+  'landsteiner': {
+    name: 'Karl Landsteiner',
+    meta: 'Austria · 1868-1943 · Inmunólogo · Nobel 1930',
+    text: 'Descubrió en 1901 los grupos sanguíneos A, B y O, y en 1940 (junto a Wiener) el factor Rh. Su trabajo permitió por primera vez transfusiones seguras y le valió el Premio Nobel de Medicina en 1930.'
+  },
+  'wiener': {
+    name: 'Alexander Wiener',
+    meta: 'EE.UU. · 1907-1976 · Serólogo',
+    text: 'Co-descubridor del factor Rh en 1940 junto a Karl Landsteiner. Sus investigaciones explicaron la enfermedad hemolítica del recién nacido y revolucionaron la atención prenatal.'
+  },
+  'jansky': {
+    name: 'Jan Janský',
+    meta: 'Chequia · 1873-1921 · Neurólogo y psiquiatra',
+    text: 'Médico checo que en 1907 clasificó la sangre humana en cuatro grupos (I, II, III, IV), de forma independiente a Landsteiner. Su clasificación ordenó el estudio clínico de la sangre.'
+  },
+  'decastello': {
+    name: 'Alfred von Decastello',
+    meta: 'Austria · 1872-1960 · Médico',
+    text: 'Discípulo de Landsteiner. Junto a Adriano Sturli identificó en 1902 el cuarto grupo sanguíneo, AB, que expresa simultáneamente los antígenos A y B.'
+  }
+};
+
+function showBio(key, evt) {
+  const sci = SCIENTISTS[key];
+  if (!sci) return;
+  const popup = document.getElementById('bioPopup');
+  popup.innerHTML = `
+    <div class="bp-name">${sci.name}</div>
+    <div class="bp-meta">${sci.meta}</div>
+    <div class="bp-text">${sci.text}</div>
+  `;
+  popup.classList.add('show');
+  positionBio(evt);
+}
+function hideBio() {
+  document.getElementById('bioPopup').classList.remove('show');
+}
+function positionBio(evt) {
+  const popup = document.getElementById('bioPopup');
+  const x = evt.clientX + 14;
+  const y = evt.clientY + 14;
+  const maxX = window.innerWidth - popup.offsetWidth - 20;
+  const maxY = window.innerHeight - popup.offsetHeight - 20;
+  popup.style.left = Math.min(x, maxX) + 'px';
+  popup.style.top  = Math.min(y, maxY) + 'px';
+}
+
+/* ═════════ LÍNEA DEL TIEMPO MEJORADA (lineal + bios) ═════════ */
+// Sobrescribe TIMELINE con campos extra (emoji + bioKey en texto)
+const TIMELINE_V2 = [
+  {
+    year: "1628",
+    emoji: "🫀",
+    mini: "Circulación",
+    title: "Se describe la circulación sanguínea",
+    text: 'El médico inglés <strong class="bio-link" data-bio="harvey">William Harvey</strong> publica su teoría de que la sangre circula por el cuerpo bombeada por el corazón. Es la base de toda la hematología moderna.',
+    q: "¿Por qué fue revolucionaria esta idea para su época?"
+  },
+  {
+    year: "1665",
+    emoji: "🐕",
+    mini: "Primer intento",
+    title: "Primera transfusión entre animales",
+    text: 'El médico <strong class="bio-link" data-bio="lower">Richard Lower</strong> realiza la primera transfusión exitosa entre dos perros en Oxford. Demuestra que la sangre puede transferirse, pero aún no se entiende por qué a veces falla.',
+    q: "¿Qué riesgos crees que existían al transfundir sangre sin conocer los grupos?"
+  },
+  {
+    year: "1818",
+    emoji: "🤰",
+    mini: "Primer humano",
+    title: "Primera transfusión humana exitosa",
+    text: 'El obstetra <strong class="bio-link" data-bio="blundell">James Blundell</strong> realiza la primera transfusión humano-humano exitosa para tratar una hemorragia posparto. Aún así, muchas transfusiones fallaban inexplicablemente.',
+    q: "¿Qué dato faltaba conocer para evitar muertes por transfusión?"
+  },
+  {
+    year: "1901",
+    emoji: "🏆",
+    mini: "Grupos ABO",
+    title: "Descubrimiento de los grupos ABO",
+    text: '<strong class="bio-link" data-bio="landsteiner">Karl Landsteiner</strong> descubre los grupos sanguíneos A, B y O al mezclar muestras y observar aglutinación. En 1930 recibe el Nobel de Medicina. Es la base de la transfusión moderna.',
+    q: "¿Por qué este descubrimiento cambió la medicina para siempre?"
+  },
+  {
+    year: "1902",
+    emoji: "⭐",
+    mini: "Grupo AB",
+    title: "Se identifica el cuarto grupo: AB",
+    text: 'Los discípulos de <strong class="bio-link" data-bio="landsteiner">Landsteiner</strong>, Alfred von Decastello y Adriano Sturli, descubren el cuarto grupo sanguíneo: AB. Este grupo es especial porque presenta AMBOS antígenos en la superficie del glóbulo rojo.',
+    q: "¿Qué fenómeno genético explica que se expresen los dos antígenos?"
+  },
+  {
+    year: "1940",
+    emoji: "🧬",
+    mini: "Factor Rh",
+    title: "Descubrimiento del Factor Rh",
+    text: '<strong class="bio-link" data-bio="landsteiner">Landsteiner</strong> y <strong class="bio-link" data-bio="wiener">Wiener</strong> descubren el Factor Rh estudiando monos Rhesus. Esto explica casos de incompatibilidad entre madre e hijo durante el embarazo (enfermedad hemolítica del recién nacido).',
+    q: "¿Por qué el Factor Rh es importante en el embarazo?"
+  }
+];
+
+STATE.timelineDone = new Set();
+STATE.timelineUnlocked = 0; // índice del hito disponible
+
+function buildTimeline() {
+  const track = document.getElementById('timelineTrack');
+  if (!track) return;
+  track.innerHTML = '';
+  TIMELINE_V2.forEach((h, i) => {
+    const el = document.createElement('div');
+    el.className = 'tl-item';
+    el.dataset.idx = i;
+    el.innerHTML = `
+      <span class="tl-emoji">${h.emoji}</span>
+      <div class="tl-year">${h.year}</div>
+      <div class="tl-mini">${h.mini}</div>
+      <span class="tl-badge">Hito ${i + 1}</span>
+    `;
+    el.onclick = () => tryOpenTimeline(i);
+    track.appendChild(el);
+  });
+  refreshTimelineStates();
+}
+
+function refreshTimelineStates() {
+  const items = document.querySelectorAll('.tl-item');
+  items.forEach((el, i) => {
+    el.classList.remove('locked', 'available', 'active', 'done');
+    if (STATE.timelineDone.has(i)) {
+      el.classList.add('done');
+      const badge = el.querySelector('.tl-badge');
+      if (badge) badge.textContent = '✓ Completado';
+    } else if (i === STATE.timelineUnlocked) {
+      el.classList.add('available');
+      const badge = el.querySelector('.tl-badge');
+      if (badge) badge.textContent = '👉 Disponible';
+    } else if (i > STATE.timelineUnlocked) {
+      el.classList.add('locked');
+      const badge = el.querySelector('.tl-badge');
+      if (badge) badge.textContent = '🔒 Bloqueado';
+    }
+  });
+  // Progreso
+  const done = STATE.timelineDone.size;
+  const total = TIMELINE_V2.length;
+  const pct = (done / total) * 100;
+  const fill = document.getElementById('tlProgressFill');
+  const txt  = document.getElementById('tlProgressText');
+  if (fill) fill.style.width = pct + '%';
+  if (txt)  txt.textContent = `${done} / ${total} hitos`;
+}
+
+function tryOpenTimeline(i) {
+  // Solo abre el hito disponible o uno ya completado (para releer)
+  if (i > STATE.timelineUnlocked) return; // bloqueado
+  openTimelineItem(i);
+}
+
+function openTimelineItem(i) {
+  document.querySelectorAll('.tl-item').forEach(x => x.classList.remove('active'));
+  const el = document.querySelector(`.tl-item[data-idx="${i}"]`);
+  if (el) el.classList.add('active');
+
+  const h = TIMELINE_V2[i];
+  const detail = document.getElementById('timelineDetail');
+  const already = STATE.timelineDone.has(i);
+
+  detail.innerHTML = `
+    <div class="td-year">${h.year}</div>
+    <div class="td-title">${h.title}</div>
+    <div class="td-text">${h.text}</div>
+    <div class="td-q">
+      <strong>💬 Pregunta de investigación:</strong> ${h.q}
+      <input type="text" id="tlInput${i}" placeholder="Escribe tu respuesta y presiona Enter o el botón..."
+        value="${already ? (STATE.investigationLog.find(e => e.year === h.year)?.a || '') : ''}"
+        ${already ? 'disabled' : ''}
+        onkeydown="if(event.key==='Enter') logInvestigation(${i})">
+      ${already
+        ? '<p style="margin-top:8px;color:var(--color-1);font-weight:600">✓ Hito completado</p>'
+        : `<button class="td-send-btn" onclick="logInvestigation(${i})">📤 Enviar respuesta y desbloquear siguiente →</button>`
+      }
+    </div>
+  `;
+  STATE.timelineOpen = i;
+  // Activar bios
+  attachBioHovers();
+  // Hacer scroll suave al detalle (importante en móvil)
+  setTimeout(() => detail.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+}
+
+function attachBioHovers() {
+  // Desactivada: la delegación global por clic (v5) maneja todo.
+  // Se mantiene la función vacía para no romper llamadas existentes.
+}
+
+
+function logInvestigation(i) {
+  const input = document.getElementById('tlInput' + i);
+  if (!input || !input.value.trim()) {
+    if (input) {
+      input.style.borderColor = 'var(--color-5)';
+      setTimeout(() => input.style.borderColor = '', 1500);
+    }
+    return;
+  }
+  // Guardar
+  const entry = { year: TIMELINE_V2[i].year, q: TIMELINE_V2[i].q, a: input.value.trim() };
+  // Evitar duplicados
+  STATE.investigationLog = STATE.investigationLog.filter(e => e.year !== entry.year);
+  STATE.investigationLog.push(entry);
+  STATE.timelineDone.add(i);
+
+  // Desbloquear siguiente
+  if (i === STATE.timelineUnlocked && STATE.timelineUnlocked < TIMELINE_V2.length - 1) {
+    STATE.timelineUnlocked++;
+  }
+
+  renderInvestigationLog();
+  refreshTimelineStates();
+
+  // Auto-avanzar al siguiente hito si existe
+  const next = i + 1;
+  if (next < TIMELINE_V2.length && STATE.timelineDone.size < TIMELINE_V2.length) {
+    setTimeout(() => {
+      openTimelineItem(next);
+      // Scroll horizontal en desktop hacia el nuevo hito
+      const nextEl = document.querySelector(`.tl-item[data-idx="${next}"]`);
+      if (nextEl) nextEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }, 600);
+  } else if (STATE.timelineDone.size === TIMELINE_V2.length) {
+    // Todos completados
+    const detail = document.getElementById('timelineDetail');
+    detail.innerHTML = `
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:3rem">🏆</div>
+        <h3 style="margin:8px 0;color:var(--color-1)">¡Investigación completada!</h3>
+        <p>Has recorrido 275 años de descubrimientos hematológicos. Revisa tu Cuaderno de Investigación abajo.</p>
+      </div>
+    `;
+  }
+}
+/* ════════════════════════════════════════════════
+   TANDA 4 · Constructor + Codominancia + Confeti
+   ════════════════════════════════════════════════ */
+
+/* ═════════ RECONSTRUIR EL CONSTRUCTOR ═════════ */
+// Sobrescribimos buildGenoTable para incluir genotipo coloreado
+function buildGenoTable() {
+  const tbl = document.getElementById('genoTable');
+  if (!tbl) return;
+  tbl.innerHTML = `<tr><th>Genotipo</th><th>Tu respuesta (fenotipo)</th></tr>`;
+  GENO_TABLE.forEach((row, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="geno-cell">
+        <span class="geno-code-${row.correct}">${row.geno}</span>
+      </td>
+      <td class="geno-answer" id="genoAns${i}" onclick="pickPhenotype(${i})">— elegir —</td>
+    `;
+    tbl.appendChild(tr);
+  });
+}
+
+/* ═════════ RESPUESTA CON MINI-RBC AL LADO ═════════ */
+function pickPhenotype(i) {
+  const current = STATE.genoAnswers[i] || null;
+  const nextIdx = current ? (PHENOTYPES.indexOf(current) + 1) % PHENOTYPES.length : 0;
+  const next = PHENOTYPES[nextIdx];
+  STATE.genoAnswers[i] = next;
+  renderGenoAnswer(i, next, 'filled');
+}
+
+function renderGenoAnswer(i, value, state) {
+  const cell = document.getElementById('genoAns' + i);
+  if (!cell) return;
+  cell.classList.remove('correct', 'wrong', 'filled');
+  if (state) cell.classList.add(state);
+
+  cell.innerHTML = `
+    <div class="geno-cell-wrap">
+      <div class="geno-mini-rbc" id="genoMini${i}"></div>
+      <span class="geno-cell-text">${value}</span>
+    </div>
+  `;
+  // Renderizar el mini glóbulo (necesita que el div esté en el DOM)
+  requestAnimationFrame(() => {
+    if (typeof renderRBC === 'function') {
+      renderRBC('genoMini' + i, value, 'mini', false);
+    }
+  });
+}
+
+/* ═════════ VERIFICAR (con confeti si está 100%) ═════════ */
+function checkGenoTable() {
+  let ok = 0;
+  let totalAnswered = 0;
+  GENO_TABLE.forEach((row, i) => {
+    const ans = STATE.genoAnswers[i];
+    if (ans) totalAnswered++;
+    if (ans === row.correct) {
+      renderGenoAnswer(i, ans, 'correct');
+      ok++;
+    } else if (ans) {
+      renderGenoAnswer(i, ans, 'wrong');
+    }
+  });
+  const fb = document.getElementById('genoFeedback');
+  if (ok === GENO_TABLE.length) {
+    fb.className = 'ok';
+    fb.textContent = `🎉 ¡Perfecto! Has acertado las ${ok} combinaciones.`;
+    launchConfetti();
+    setTimeout(showAchievement, 600);
+  } else if (totalAnswered === 0) {
+    fb.className = 'bad';
+    fb.textContent = `⚠️ Aún no has elegido ningún fenotipo. Haz clic en las celdas para elegir.`;
+  } else {
+    fb.className = 'bad';
+    fb.textContent = `📚 Acertaste ${ok} de ${GENO_TABLE.length}. Revisa las marcadas en rojo.`;
+  }
+}
+
+function revealGenoTable() {
+  GENO_TABLE.forEach((row, i) => {
+    STATE.genoAnswers[i] = row.correct;
+    renderGenoAnswer(i, row.correct, 'correct');
+  });
+  const fb = document.getElementById('genoFeedback');
+  fb.className = 'ok';
+  fb.textContent = '⚡ Tabla revelada por el docente. Estudia las combinaciones.';
+}
+
+function resetGenoTable() {
+  STATE.genoAnswers = {};
+  GENO_TABLE.forEach((_, i) => {
+    const cell = document.getElementById('genoAns' + i);
+    if (cell) {
+      cell.textContent = '— elegir —';
+      cell.classList.remove('filled', 'correct', 'wrong');
+    }
+  });
+  const fb = document.getElementById('genoFeedback');
+  if (fb) {
+    fb.textContent = '';
+    fb.className = '';
+  }
+}
+
+/* ═════════ CONFETI (canvas vanilla) ═════════ */
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  if (!canvas) return;
+  canvas.classList.add('active');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+
+  const colors = ['#ff6e61', '#f5b400', '#6ebf9c', '#6a9eec', '#e5a29f', '#9333ea', '#16a34a'];
+  const particles = [];
+  const count = 160;
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * canvas.height * 0.5,
+      r: 4 + Math.random() * 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 4,
+      vy: 2 + Math.random() * 4,
+      rot: Math.random() * 360,
+      vr: (Math.random() - 0.5) * 10,
+      shape: Math.random() > 0.5 ? 'rect' : 'circ'
+    });
+  }
+
+  let start = performance.now();
+  const duration = 3500;
+
+  function frame(now) {
+    const elapsed = now - start;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.08; // gravedad
+      p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rot * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      if (p.shape === 'rect') {
+        ctx.fillRect(-p.r, -p.r * 0.6, p.r * 2, p.r * 1.2);
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    });
+    if (elapsed < duration) {
+      requestAnimationFrame(frame);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.classList.remove('active');
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ═════════ OVERLAY DE LOGRO ═════════ */
+function showAchievement() {
+  document.getElementById('achievementOverlay').classList.add('open');
+}
+function closeAchievement() {
+  document.getElementById('achievementOverlay').classList.remove('open');
+}
+
+/* ═════════ CODOMINANCIA · Detalle extra al hover ═════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  // Agregar bloque extra dentro de cada caja de codominancia
+  const cols = document.querySelectorAll('.codom-col');
+  const extras = [
+    '🔬 Ejemplo: color de pétalos en flores rojas (RR) × blancas (rr) → todos rojos.',
+    '🩸 Único caso en humanos cotidiano: grupo sanguíneo AB.',
+    '🌱 Ocurre cuando ambos alelos son recesivos: ninguno produce el rasgo.'
+  ];
+  cols.forEach((col, i) => {
+    if (col.querySelector('.codom-extra')) return;
+    const extra = document.createElement('div');
+    extra.className = 'codom-extra';
+    extra.textContent = extras[i] || '';
+    col.appendChild(extra);
+  });
+
+  // Re-construir el constructor con los genotipos coloreados
+  if (document.getElementById('genoTable')) buildGenoTable();
+});
+
+/* Cerrar achievement con ESC */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const ach = document.getElementById('achievementOverlay');
+    if (ach && ach.classList.contains('open')) closeAchievement();
+  }
+});
+/* ════════════════════════════════════════════════
+   BIOS DE CIENTÍFICOS · v5 — Anclaje real al viewport
+   Mueve el popup al <body> para escapar de ancestros
+   con transform/filter/perspective que rompen fixed
+   ════════════════════════════════════════════════ */
+
+let _bioCurrentKey = null;
+let _bioHideTimer = null;
+
+/* Asegura que #bioPopup sea hijo directo de <body> */
+function ensureBioPopupInBody() {
+  let popup = document.getElementById('bioPopup');
+  if (!popup) {
+    // crearlo si no existe
+    popup = document.createElement('div');
+    popup.id = 'bioPopup';
+    popup.className = 'bio-popup';
+    document.body.appendChild(popup);
+    return popup;
+  }
+  if (popup.parentElement !== document.body) {
+    document.body.appendChild(popup); // lo saca de cualquier ancestro
+  }
+  return popup;
+}
+
+
+
+/* ═════════ DELEGACIÓN GLOBAL DE EVENTOS · solo CLIC ═════════ */
+
+// Asegurar que el popup esté en <body> apenas el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', ensureBioPopupInBody);
+} else {
+  ensureBioPopupInBody();
+}
+
+// Clic sobre un .bio-link → mostrar/ocultar bio
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('.bio-link');
+
+  if (link) {
+    e.preventDefault();
+    e.stopPropagation();
+    const key = link.dataset.bio;
+    if (!key) return;
+
+    // Si ya estaba abierto el mismo → cerrar (toggle)
+    if (_bioCurrentKey === key) {
+      hideBioNow();
+    } else {
+      showBio(key, link);
+    }
+    return;
+  }
+
+  // Clic fuera del popup → cerrar
+  const popup = document.getElementById('bioPopup');
+  if (popup && popup.classList.contains('show') && !popup.contains(e.target)) {
+    hideBioNow();
+  }
+});
+
+// Cierre inmediato sin delay (para clic)
+function hideBioNow() {
+  const popup = document.getElementById('bioPopup');
+  if (!popup) return;
+  popup.classList.remove('show');
+  popup.style.visibility = '';
+  _bioCurrentKey = null;
+}
+
+// Reposicionar si se hace scroll o resize con el popup abierto
+window.addEventListener('scroll', () => {
+  if (!_bioCurrentKey) return;
+  const link = document.querySelector(`.bio-link[data-bio="${_bioCurrentKey}"]`);
+  if (link) positionBio(link);
+}, true);
+
+window.addEventListener('resize', () => {
+  if (!_bioCurrentKey) return;
+  const link = document.querySelector(`.bio-link[data-bio="${_bioCurrentKey}"]`);
+  if (link) positionBio(link);
+});
+
+// ESC para cerrar
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') hideBioNow();
+});
 
