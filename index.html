@@ -6,6 +6,8 @@
 <title>Hemo-Lab · Sesión 9 · Prof. Steve Polanco</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="rbc-animations.css">
+
 </head>
 <body>
 
@@ -310,6 +312,21 @@
     </div>
   </div>
 
+  <!-- ══ INTENCIÓN PEDAGÓGICA EXPLÍCITA (grande, central) ══ -->
+  <div class="big-intention">
+    <div class="bi-label">🎯 Intención pedagógica de la clase</div>
+    <p class="bi-text">
+      Comprender el sistema sanguíneo <strong>ABO</strong> como ejemplo de
+      <strong>alelos múltiples</strong> y <strong>codominancia</strong>,
+      aplicando este conocimiento a situaciones de la vida real
+      como las <strong>transfusiones</strong> y la <strong>donación de sangre</strong>.
+    </p>
+    <label class="bi-check" id="biCheckBox">
+      <input type="checkbox" id="biChecked" onchange="markIntentionAchieved()">
+      <span class="bi-check-text">✓ Al finalizar la clase, marca aquí si crees que cumpliste esta intención</span>
+    </label>
+  </div>
+
   <div class="commitment-box">
     <div class="commit-icon">🤝</div>
     <p><strong>Acuerdo de clase:</strong> participamos con respeto, escuchamos al compañero, levantamos la mano para hablar y construimos juntos el conocimiento.</p>
@@ -320,6 +337,7 @@
     <button class="snext" onclick="goTo(3)">Iniciar Desarrollo →</button>
   </div>
 </div>
+
 <!-- ════ SLIDE 3: CONTEXTUALIZACIÓN HISTÓRICA ════ -->
 <div class="slide" id="slide3">
   <div class="phase-tag desarrollo">🔵 DESARROLLO · Contextualización</div>
@@ -351,13 +369,32 @@
     <div><strong>Tu misión:</strong> Eres un hematólogo forense. Haz clic en cada hito de la línea del tiempo, lee el caso y responde la pregunta. Tus respuestas quedarán en el <strong>Cuaderno de Investigación</strong>.</div>
   </div>
 
-  <div class="timeline-wrap">
+  <!-- ══ Indicador de progreso de hitos ══ -->
+  <div class="tl-progress">
+    <div class="tl-progress-label">
+      <span>📜 Progreso de investigación:</span>
+      <strong id="tlProgressText">0 / 6 hitos</strong>
+    </div>
+    <div class="tl-progress-bar">
+      <div class="tl-progress-fill" id="tlProgressFill"></div>
+    </div>
+  </div>
+
+  <!-- ══ Instrucción guía ══ -->
+  <div class="tl-instruction">
+    👉 <strong>Haz clic en el primer hito (1628)</strong> para comenzar tu investigación. Los demás se desbloquearán a medida que avances.
+  </div>
+
+  <div class="timeline-wrap" id="timelineWrap">
     <div class="timeline-track" id="timelineTrack"></div>
   </div>
 
   <div class="timeline-detail" id="timelineDetail">
-    <div class="td-empty">👆 Haz clic en un hito para explorarlo</div>
+    <div class="td-empty">👆 Haz clic en el primer hito para iniciar</div>
   </div>
+
+  <!-- ══ Tooltip de biografía científica (hover wikipedia-style) ══ -->
+  <div class="bio-popup" id="bioPopup"></div>
 
   <div class="card investigation-log">
     <div class="btitle">📓 Cuaderno de Investigación</div>
@@ -370,7 +407,7 @@
   </div>
 </div>
 
-<!-- ════ SLIDE 4: LOS 3 ALELOS — PELUCHES CON PEGATINAS ════ -->
+<!-- ════ SLIDE 4: LOS 3 ALELOS — FLIP CARDS ANIMADAS ════ -->
 <div class="slide" id="slide4">
   <div class="phase-tag desarrollo">🔵 DESARROLLO · Conceptualización</div>
   <div class="pauta-aspects">
@@ -382,59 +419,32 @@
   </div>
 
   <div class="phdr">
-    <div class="pico pia">🧸</div>
-    <div><h2>Los 4 Tipos de Glóbulos Rojos</h2><p>Analogía: como los uniformes escolares con sus logos</p></div>
+    <div class="pico pia">🧬</div>
+    <div>
+      <h2>Los 4 Tipos de Glóbulos Rojos</h2>
+      <p>Analogía: como los uniformes escolares con sus logos institucionales</p>
+    </div>
   </div>
 
+  <!-- ══ Analogía cercana ══ -->
   <div class="analogy-box">
     <div class="aqlbl-amber">💡 Analogía cercana</div>
     <p>Piensen en los <strong>uniformes del Politécnico Juan Emilio Bosch</strong>. Todos los estudiantes usan el mismo uniforme base, pero el <strong>logo en el bolsillo</strong> dice a qué área pertenecen: Mercadeo, Turismo, etc. Si vemos a alguien con dos logos, sabemos que pertenece a ambas áreas. Si no tiene logo... no sabemos a cuál pertenece.</p>
-    <p style="margin-top:10px"><strong>Los glóbulos rojos funcionan igual:</strong> todos son el mismo "peluche rojo", pero las <strong>pegatinas (antígenos)</strong> en su superficie indican el grupo sanguíneo.</p>
+    <p style="margin-top:10px"><strong>Los glóbulos rojos funcionan igual:</strong> todos son el mismo "eritrocito rojo", pero los <strong>antígenos</strong> en su superficie (los "logos") indican el grupo sanguíneo al que pertenecen.</p>
   </div>
 
-  <div class="plush-grid">
-    <!-- Tipo A -->
-    <div class="plush-card" data-type="A">
-      <div class="plush-rbc" id="plushA"></div>
-      <div class="plush-label">
-        <div class="plush-type">Grupo A</div>
-        <div class="plush-sticker">🔺 Pegatina A</div>
-      </div>
-      <div class="plush-geno">Genotipo: I<sup>A</sup>I<sup>A</sup> o I<sup>A</sup>i</div>
-    </div>
-
-    <!-- Tipo B -->
-    <div class="plush-card" data-type="B">
-      <div class="plush-rbc" id="plushB"></div>
-      <div class="plush-label">
-        <div class="plush-type">Grupo B</div>
-        <div class="plush-sticker">🟦 Pegatina B</div>
-      </div>
-      <div class="plush-geno">Genotipo: I<sup>B</sup>I<sup>B</sup> o I<sup>B</sup>i</div>
-    </div>
-
-    <!-- Tipo AB -->
-    <div class="plush-card plush-featured" data-type="AB">
-      <div class="plush-rbc" id="plushAB"></div>
-      <div class="plush-label">
-        <div class="plush-type">Grupo AB ⭐</div>
-        <div class="plush-sticker">🔺🟦 Ambas pegatinas</div>
-      </div>
-      <div class="plush-geno">Genotipo: I<sup>A</sup>I<sup>B</sup></div>
-      <div class="plush-special">Codominancia: ¡los dos logos visibles!</div>
-    </div>
-
-    <!-- Tipo O -->
-    <div class="plush-card" data-type="O">
-      <div class="plush-rbc" id="plushO"></div>
-      <div class="plush-label">
-        <div class="plush-type">Grupo O</div>
-        <div class="plush-sticker">⚪ Sin pegatinas</div>
-      </div>
-      <div class="plush-geno">Genotipo: ii</div>
-    </div>
+  <!-- ══ Instrucción para flip cards ══ -->
+  <div class="tip">
+    <div class="ti">👆</div>
+    <div><strong>Haz clic en cada tarjeta</strong> para ver el glóbulo rojo girar y mostrar sus antígenos en movimiento. ¡Observa la diferencia entre cada grupo sanguíneo!</div>
   </div>
 
+  <!-- ══ FLIP CARDS · se generan desde assets/rbc-animations.js ══ -->
+  <div class="flip-grid" id="flipGrid">
+    <!-- Las 4 tarjetas (A, B, AB, O) se inyectan automáticamente -->
+  </div>
+
+  <!-- ══ Concepto clave: alelos múltiples ══ -->
   <div class="card multi-allele">
     <div class="btitle">📚 Concepto clave · Alelos múltiples</div>
     <p>A diferencia de otros genes que solo tienen 2 alelos (dominante y recesivo), el gen ABO tiene <strong>3 alelos posibles en la población</strong>: I<sup>A</sup>, I<sup>B</sup> e i. Aunque cada persona solo lleva 2 (uno de cada progenitor), estas combinaciones generan los 4 grupos sanguíneos posibles.</p>
@@ -481,9 +491,10 @@
 
   <div class="geno-actions">
     <button class="vbtn" onclick="checkGenoTable()">✓ Verificar respuestas</button>
-    <button class="aabtn" onclick="revealGenoTable()">⚡ Revelar todo</button>
+    <button class="aabtn" onclick="requestGenoReveal()">🔒 Revelar todo</button>
     <button class="rstbtn" onclick="resetGenoTable()">↺ Reiniciar</button>
   </div>
+
 
   <div id="genoFeedback"></div>
 
@@ -622,6 +633,33 @@
       <label>❓ Aún tengo dudas sobre...</label>
       <textarea class="synth-input" id="synth3" placeholder="Algo que quisieras profundizar o que no quedó claro..."></textarea>
     </div>
+  </div>
+
+  <!-- ══ VERIFICACIÓN DE INTENCIÓN PEDAGÓGICA ══ -->
+  <div class="card intention-check">
+    <div class="btitle">🎯 Revisión de la intención pedagógica</div>
+    <p class="ic-intro">Al inicio de la clase planteamos una intención. Verifiquemos si la cumpliste:</p>
+
+    <div class="ic-question">
+      <strong>1. ¿Recuerdas cuál era la intención pedagógica de hoy?</strong>
+      <div class="ic-options">
+        <button class="ic-opt" onclick="checkIntention(0, this)">Estudiar las células sanguíneas en general</button>
+        <button class="ic-opt" data-correct="true" onclick="checkIntention(1, this)">Comprender el sistema ABO como ejemplo de alelos múltiples y codominancia</button>
+        <button class="ic-opt" onclick="checkIntention(2, this)">Aprender sobre el factor Rh y embarazos</button>
+      </div>
+    </div>
+
+    <div class="ic-question">
+      <strong>2. ¿Crees que se cumplió esta intención en tu caso?</strong>
+      <div class="ic-scale">
+        <button class="ic-scale-btn" onclick="setIntentionScale(1, this)">😕 No tanto</button>
+        <button class="ic-scale-btn" onclick="setIntentionScale(2, this)">🤔 Más o menos</button>
+        <button class="ic-scale-btn" onclick="setIntentionScale(3, this)">🙂 Bastante</button>
+        <button class="ic-scale-btn" onclick="setIntentionScale(4, this)">🎉 ¡Totalmente!</button>
+      </div>
+    </div>
+
+    <div id="icFeedback" class="ic-feedback"></div>
   </div>
 
   <!-- Mini-quiz de salida -->
@@ -813,6 +851,23 @@
 </button>
 
 <script src="app.js"></script>
+<script src="rbc-animations.js"></script>
+<!-- ══════════ CONFETI Y LOGRO ══════════ -->
+<canvas id="confettiCanvas"></canvas>
+
+<div class="achievement-overlay" id="achievementOverlay">
+  <div class="ach-content">
+    <div class="ach-trophy">🏆</div>
+    <h2 class="ach-title">¡Genotipo dominado!</h2>
+    <p class="ach-text">Has acertado las 6 combinaciones del sistema ABO. <br>Comprendes los <strong>alelos múltiples</strong> y la <strong>codominancia</strong>.</p>
+    <div class="ach-stars">
+      <span class="ach-star">⭐</span>
+      <span class="ach-star">⭐</span>
+      <span class="ach-star">⭐</span>
+    </div>
+    <button class="ach-close" onclick="closeAchievement()">¡Continuar! →</button>
+  </div>
+</div>
+
 </body>
 </html>
-
