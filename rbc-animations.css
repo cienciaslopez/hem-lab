@@ -1,0 +1,278 @@
+/* ════════════════════════════════════════════════
+   HEMO-LAB · Animaciones Glóbulos Rojos v2
+   Responsive · Genotipo con color característico
+   ════════════════════════════════════════════════ */
+
+.rbc-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Glóbulo rojo realista */
+.rbc-real {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%,
+                #e53935 0%,
+                #c62828 45%,
+                #7f0000 80%,
+                #2b0000 100%);
+  box-shadow:
+    inset -15px -15px 30px rgba(0,0,0,.8),
+    inset  10px  10px 20px rgba(255,255,255,.15),
+    0 12px 20px rgba(0,0,0,.4);
+  position: relative;
+  z-index: 5;
+}
+.rbc-real::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 45%; height: 45%;
+  border-radius: 50%;
+  box-shadow:
+    inset 8px 10px 15px rgba(0,0,0,.55),
+    inset -6px -8px 12px rgba(255,255,255,.25);
+  background: transparent;
+}
+
+/* Antígeno A — pentágono morado */
+.marker-a {
+  background: linear-gradient(to bottom, #c084fc, #9333ea);
+  clip-path: polygon(50% 0%, 100% 30%, 100% 100%, 0% 100%, 0% 30%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-family: Arial, sans-serif;
+  padding-top: 20%;
+}
+/* Antígeno B — cápsula verde */
+.marker-b {
+  background: linear-gradient(to bottom, #4ade80, #16a34a);
+  border-radius: 50px 50px 5px 5px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-family: Arial, sans-serif;
+}
+.marker-animator {
+  filter: drop-shadow(0 5px 4px rgba(0,0,0,.5));
+}
+
+/* Animaciones */
+@keyframes rbc-float        { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes rbc-float-smooth { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+@keyframes rbc-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes rbc-glow {
+  0%,100% { filter: drop-shadow(0 0 10px rgba(255,215,0,.12)); }
+  50%     { filter: drop-shadow(0 0 22px rgba(255,215,0,.55)); }
+}
+.anim-float   { animation: rbc-float 4s ease-in-out infinite; }
+.anim-float-o { animation: rbc-float-smooth 5s ease-in-out infinite; }
+.anim-pop     { animation: rbc-pop .5s cubic-bezier(.175,.885,.32,1.275) forwards; opacity: 0; }
+.anim-glow    { animation: rbc-glow 3s ease-in-out infinite; }
+
+/* ════════════════════════════════════════════════
+   FLIP CARDS — Responsive y contenido
+   ════════════════════════════════════════════════ */
+.flip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+  perspective: 1200px;
+}
+
+.flip-card-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.flip-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;            /* mantiene proporción */
+  max-height: 360px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform .8s cubic-bezier(.65,.05,.36,1);
+}
+.flip-card.flipped { transform: rotateY(180deg); }
+
+.flip-face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;     /* contenido fluye desde arriba */
+  padding: 16px 14px 14px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;                /* impide que el glóbulo se salga */
+}
+
+/* ── CARA FRONTAL ── */
+.flip-front {
+  background: var(--bg-soft);
+  border: 2px solid var(--line);
+}
+.flip-front.featured {
+  border-color: var(--color-2);
+  background: linear-gradient(135deg, rgba(245,180,0,.08), rgba(255,110,97,.05));
+}
+.ff-cell-preview {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.ff-type {
+  font-size: clamp(.95rem, 2vw, 1.15rem);
+  font-weight: 800;
+  margin-top: 4px;
+  color: var(--ink);
+}
+.ff-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  margin-top: 6px;
+  font-weight: 700;
+}
+.ff-hint {
+  font-size: .72rem;
+  color: var(--muted);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* ── CARA TRASERA ── */
+.flip-back {
+  background: linear-gradient(135deg, #1a1d2d, #0f111a);
+  color: #fff;
+  border: 2px solid var(--color-5);
+  transform: rotateY(180deg);
+}
+.fb-stage {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fb-info {
+  width: 100%;
+  margin-top: 4px;
+}
+.fb-type {
+  font-size: clamp(.9rem, 2vw, 1.05rem);
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.fb-geno {
+  font-family: 'JetBrains Mono', monospace;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 4px;
+  font-size: .78rem;
+  font-weight: 700;
+}
+.fb-pheno {
+  font-size: .75rem;
+  margin-top: 6px;
+  opacity: .9;
+}
+.fb-back-btn {
+  margin-top: 8px;
+  background: var(--color-5);
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .72rem;
+  cursor: pointer;
+}
+
+/* ════════ GENOTIPOS CON COLOR CARACTERÍSTICO ════════ */
+.geno-tag-A {
+  background: linear-gradient(135deg, #c084fc, #9333ea);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(147,51,234,.35);
+}
+.geno-tag-B {
+  background: linear-gradient(135deg, #4ade80, #16a34a);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(22,163,74,.35);
+}
+.geno-tag-AB {
+  background: linear-gradient(135deg, #9333ea 0%, #9333ea 49%, #16a34a 51%, #16a34a 100%);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(245,180,0,.45);
+  border: 1.5px solid #f5b400;
+}
+.geno-tag-O {
+  background: var(--bg-alt);
+  color: var(--ink);
+  border: 1.5px dashed var(--muted);
+}
+
+/* En la cara trasera (fondo oscuro) los genotipos lucen igual de fuertes */
+.flip-back .geno-tag-O {
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  border-color: rgba(255,255,255,.4);
+}
+
+/* Hint flotante */
+.flip-card-wrapper::before {
+  content: "👆 Clic para girar";
+  position: absolute;
+  top: -10px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-2);
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 999px;
+  z-index: 10;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  opacity: 0;
+  transition: opacity .25s ease;
+  pointer-events: none;
+}
+.flip-card-wrapper:hover::before { opacity: 1; }
+
+/* ════════ RESPONSIVE ════════ */
+@media (max-width: 600px) {
+  .flip-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .flip-card { max-height: 300px; }
+  .ff-hint { display: none; }
+  .ff-tag, .fb-geno { font-size: .72rem; }
+}
+@media (max-width: 380px) {
+  .flip-grid { grid-template-columns: 1fr; }
+}
